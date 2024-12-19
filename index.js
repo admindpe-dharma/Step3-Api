@@ -49,7 +49,10 @@ const [plcCommandQueue,plcQueue,scaleQueue,pendingQueue,employeeQueue,weightbinQ
     const res = await writePLC(job.data);
     done(null,res);
  })
-
+plcCommandQueue.on('active',(job,jobres)=>{
+    if (!client.isOpen)
+      plcQueue.add({id:1});
+});
 plcQueue.process(  (job,done)=>{
     client.connectRTU(process.env.PORT_PLC, { baudRate: 9600 }).then(x=>
       client.setTimeout(1000)).catch(er=>{
